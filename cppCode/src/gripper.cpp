@@ -62,8 +62,8 @@ bool gripper::setAddress(string inPort)
     }
 
     //1 close, 2 is open
-    //msg = {2};
-    //write(serial_port, msg, sizeof(msg));
+    unsigned char msg []= {2};
+    write(serial_port, msg, sizeof(msg));
 
     printf("%s\n", strerror(errno));
 

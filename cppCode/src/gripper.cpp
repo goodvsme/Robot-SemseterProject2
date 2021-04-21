@@ -5,18 +5,27 @@ gripper::gripper()
 
 }
 
-int gripper::setAddress(string inPort)
+gripper::gripper(string inP)
+{
+    setAddress(inP);
+}
+
+bool gripper::setAddress(string inPort)
 {
     portCOM = inPort;
-    serial_port  = open(portCOM.c_str(), O_RDWR);
+    //portCOM.c_str()
+    serial_port  = open("/dev/ttyUSB0", O_RDWR);
 
     // Create new termios struc, we call it 'tty' for convention
     struct termios tty;
 
     // Read in existing settings, and handle any error
+    cout<<tcgetattr(serial_port, &tty)<<endl;
     if(tcgetattr(serial_port, &tty) != 0) {
+
         printf("Error %i from tcgetattr: %s\n", errno, strerror(errno));
-        return -1;
+        stop = 1;
+        return 1;
     }
 
     tty.c_cflag &= ~PARENB; // Clear parity bit, disabling parity (most common)
@@ -49,14 +58,49 @@ int gripper::setAddress(string inPort)
     // Save tty settings, also checking for error
     if (tcsetattr(serial_port, TCSANOW, &tty) != 0) {
         printf("Error %i from tcsetattr: %s\n", errno, strerror(errno));
-        return -1;
+        return 1;
     }
 
     //1 close, 2 is open
-    msg = {2};
-    write(serial_port, msg, sizeof(msg));
+    //msg = {2};
+    //write(serial_port, msg, sizeof(msg));
 
     printf("%s\n", strerror(errno));
 
-    return 1;
+    return 0;
 }
+
+
+void gripper::readSerial(){
+    if(stop == 0){
+        int num_bytes = read(serial_port, &read_buf, sizeof(read_buf));
+        if (num_bytes < 0) {
+            stop = 1;
+        }else{
+            for (unsigned long i = 0; i < (unsigned long)num_bytes; ++i) {
+                if(read_buf[i] == 0){
+                    stop = 1;
+                    break;
+                }
+
+                amp = ((5/637.5)*(int)read_buf[i]-1);
+                if(amp < 0){
+                    std::cout << "Direction: Closing ";
+                }
+                else{
+                    std::cout << "Direction: Opening ";
+                }
+                avg_amp = (std::abs(amp) + avg_amp)/2;
+                if(std::abs(amp) > peak_amp){peak_amp = std::abs(amp);}
+                strokeTime += 0.05;
+                std::cout << "Current: " << std::abs(amp) << std::endl;
+            }
+        }
+    }
+}
+
+
+void gripper::closeSerial(){
+    close(serial_port);
+}
+

@@ -1,17 +1,38 @@
 #include "widget.h"
 #include "./ui_widget.h"
 
+
+
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::Widget)
 {
     ui->setupUi(this);
+    setup();
+
+}
+
+void Widget::setup(){
+
+    robotUR5 testff("f","127.0.0.1");
+    testff.modbusConnect();
+    rob.push_back(testff);
+    rob[0].modbusUpdateCoords();
+
+    gripper testgg("/dev/ttyUSB0");
+
 }
 
 
 void Widget::paintEvent(QPaintEvent *event)
 {
+
+    dataUpdate();
+    guiUpdate();
+
     animation();
+
+    update();
 }
 
 Widget::~Widget()
@@ -19,8 +40,23 @@ Widget::~Widget()
 
 }
 
+void Widget::dataUpdate()
+{
+    rob[0].modbusConnect();
+    rob[0].modbusUpdateCoords();
+    rob[0].modbusDisconnect();
+}
+
 void Widget::guiUpdate()
 {
+
+    ui->doubleSpinBox_X->setValue(rob[0].TCP_Coords[0]);
+    ui->doubleSpinBox_Y->setValue(rob[0].TCP_Coords[1]);
+    ui->doubleSpinBox_Z->setValue(rob[0].TCP_Coords[2]);
+    ui->doubleSpinBox_XX->setValue(rob[0].TCP_Coords[3]);
+    ui->doubleSpinBox_YY->setValue(rob[0].TCP_Coords[4]);
+    ui->doubleSpinBox_ZZ->setValue(rob[0].TCP_Coords[5]);
+
 
 }
 

@@ -19,7 +19,10 @@ class gripper
 {
 public:
     gripper();
-    int setAddress(string portCOM);
+    gripper(string inP);
+    bool setAddress(string portCOM);
+    void readSerial();
+    void closeSerial();
 
     string portCOM;
 
@@ -29,7 +32,9 @@ private:
     // Allocate memory for read buffer, set size according to your needs
     uint8_t read_buf [2];
 
-    unsigned char msg[]={};
+    //unsigned char msg[]={2};
+
+    bool stop;
 
     float amp;
     float avg_amp;

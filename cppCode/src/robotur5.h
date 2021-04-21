@@ -1,8 +1,10 @@
 #ifndef ROBOTUR5_H
 #define ROBOTUR5_H
 
-#include "widget.h"
 #include <modbus.h>
+#include <string>
+#include <array>
+#include <iostream>
 
 using namespace std;
 
@@ -10,21 +12,33 @@ class robotUR5
 {
 public:
     robotUR5();
-    robotUR5(string robotName, string tcpUR5IP, string usbPort);
+    robotUR5(string robotName, string tcpUR5IP);
     void modbusUpdateCoords();
+    bool modbusConnect();
+    void modbusDisconnect();
+
+    ~robotUR5();
+
+    array <float,6> TCP_Coords;
 private:
+    bool connected = 0;
+
     string robotName;
     string tcpUR5IP;
-    string usbPort;
+
+
 
     //Modbus
     int rc;
 
     modbus_t *ctx;
 
-    shared_ptr<uint16_t> read_registers_memory;
-    shared_ptr<uint8_t> directions;
-    shared_ptr<uint8_t> run;
+    int length_of_TCP_return_values = 6; // The amount of values returned from later register reads
+
+    uint16_t *read_TCP_Coords;
+    uint8_t *directions;
+    uint8_t *run;
+    uint8_t *finished;
 };
 
 #endif // ROBOTUR5_H

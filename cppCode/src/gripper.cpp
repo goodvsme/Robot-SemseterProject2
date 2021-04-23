@@ -24,7 +24,8 @@ bool gripper::setAddress(string inPort)
     if(tcgetattr(serial_port, &tty) != 0) {
 
         printf("Error %i from tcgetattr: %s\n", errno, strerror(errno));
-        stop = 1;
+         cout<<""<<endl;
+
         return 1;
     }
 
@@ -48,8 +49,10 @@ bool gripper::setAddress(string inPort)
     // tty.c_oflag &= ~OXTABS; // Prevent conversion of tabs to spaces (NOT PRESENT ON LINUX)
     // tty.c_oflag &= ~ONOEOT; // Prevent removal of C-d chars (0x004) in output (NOT PRESENT ON LINUX)
 
-    tty.c_cc[VTIME] = 20;    // Wait for up to 1s (10 deciseconds), returning as soon as any data is received.
+    tty.c_cc[VTIME] = 1;    // Wait for up to 1s (10 deciseconds), returning as soon as any data is received.
     tty.c_cc[VMIN] = 1;
+
+    fcntl(serial_port,F_SETFL,FNDELAY);
 
     // Set in/out baud rate to be 115200
     cfsetispeed(&tty, B115200);
@@ -62,40 +65,33 @@ bool gripper::setAddress(string inPort)
     }
 
     //1 close, 2 is open
-    unsigned char msg []= {2};
-    write(serial_port, msg, sizeof(msg));
+    //unsigned char msg []= {2};
+    //write(serial_port, msg, sizeof(msg));
 
     printf("%s\n", strerror(errno));
-
     return 0;
 }
 
 
 void gripper::readSerial(){
     if(stop == 0){
-        int num_bytes = read(serial_port, &read_buf, sizeof(read_buf));
-        if (num_bytes < 0) {
+        read(serial_port, &dataIn, sizeof(dataIn));
+        if(dataIn[0] == 0){
             stop = 1;
-        }else{
-            for (unsigned long i = 0; i < (unsigned long)num_bytes; ++i) {
-                if(read_buf[i] == 0){
-                    stop = 1;
-                    break;
-                }
+            amp = 0;
 
-                amp = ((5/637.5)*(int)read_buf[i]-1);
-                if(amp < 0){
-                    std::cout << "Direction: Closing ";
-                }
-                else{
-                    std::cout << "Direction: Opening ";
-                }
-                avg_amp = (std::abs(amp) + avg_amp)/2;
-                if(std::abs(amp) > peak_amp){peak_amp = std::abs(amp);}
-                strokeTime += 0.05;
-                std::cout << "Current: " << std::abs(amp) << std::endl;
+        }else{
+            amp = ((5/637.5)*(int)dataIn[0]-1);
+            avg_amp = (abs(amp)+avg_amp)/2;
+            if(abs(amp)>peak_amp){
+                peak_amp=abs(amp);
             }
+            strokeTime+=0.05;
+            force=(0.3*(58/1)*490)/(55*sin(1.571-(1.222/26)*(26-strokeTime))+45*cos(0.611));
+
+
         }
+
     }
 }
 
@@ -104,3 +100,12 @@ void gripper::closeSerial(){
     close(serial_port);
 }
 
+void gripper::sendmsg(unsigned char i){
+    unsigned char msg []= {i};
+    write(serial_port, msg, sizeof(msg));
+    stop = 0;
+}
+
+gripper::~gripper(){
+    closeSerial();
+}

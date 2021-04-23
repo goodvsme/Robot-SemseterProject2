@@ -23,24 +23,29 @@ public:
     bool setAddress(string portCOM);
     void readSerial();
     void closeSerial();
+    void sendmsg(unsigned char i);
+    ~gripper();
 
     string portCOM;
+    unsigned char dataIn [1];
 
+
+    float amp=0;
+    float avg_amp=0;
+    float peak_amp=0;
+    float force=0;
+    float strokeTime=0.05;
+    bool direction;
 private:
     int serial_port;
 
     // Allocate memory for read buffer, set size according to your needs
-    uint8_t read_buf [2];
 
-    //unsigned char msg[]={2};
 
-    bool stop;
 
-    float amp;
-    float avg_amp;
-    float peak_amp;
-    float force;
-    float strokeTime;
+
+    bool stop = 1;
+
 
 };
 

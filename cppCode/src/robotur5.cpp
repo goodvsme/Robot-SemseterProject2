@@ -117,6 +117,7 @@ void robotUR5::modbusUpdateCoords()
 
 void robotUR5::modbusDisconnect()
 {
+
     if(connected){
     modbus_close(ctx);
     modbus_free(ctx);

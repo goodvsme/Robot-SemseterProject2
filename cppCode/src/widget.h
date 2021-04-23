@@ -9,6 +9,7 @@
 #include <QWidget>
 #include <QPainter>
 #include <QtMath>
+#include <QTimer>
 
 //ALL
 #include <memory>
@@ -35,19 +36,33 @@ public:
 
 
     virtual void paintEvent(QPaintEvent *event);
+
     ~Widget();
 
 
 
 
+private slots:
+
+    void dataUpdate();
+
+    void on_clockwise_clicked();
+
+    void on_counter_clicked();
+
+    void on_stop_clicked();
+
+    void on_junk_clicked();
+
 private:
     void setup();
-    std::unique_ptr<Ui::Widget> ui;
-    void dataUpdate();
+
     void guiUpdate();
     void animation();
 
-
+    gripper testgg;
+    Ui::Widget *ui;
+    QTimer *timer;
 
 
 };

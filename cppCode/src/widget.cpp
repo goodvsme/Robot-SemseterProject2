@@ -8,6 +8,9 @@ Widget::Widget(QWidget *parent)
     , ui(new Ui::Widget)
 {
     ui->setupUi(this);
+    timer = new QTimer(this);
+    connect(timer,SIGNAL(timeout()),this,SLOT(dataUpdate()));
+    timer->start(50);
     setup();
 
 }
@@ -19,8 +22,8 @@ void Widget::setup(){
     rob.push_back(testff);
     rob[0].modbusUpdateCoords();
 
-    gripper testgg("/dev/ttyUSB0");
 
+    testgg.setAddress("/dev/ttyUSB0");
 
 }
 
@@ -28,7 +31,7 @@ void Widget::setup(){
 void Widget::paintEvent(QPaintEvent *event)
 {
 
-    dataUpdate();
+    //dataUpdate();
     guiUpdate();
 
     animation();
@@ -38,7 +41,7 @@ void Widget::paintEvent(QPaintEvent *event)
 
 Widget::~Widget()
 {
-
+    delete ui;
 }
 
 void Widget::dataUpdate()
@@ -46,6 +49,8 @@ void Widget::dataUpdate()
     rob[0].modbusConnect();
     rob[0].modbusUpdateCoords();
     rob[0].modbusDisconnect();
+
+    testgg.readSerial();
 }
 
 void Widget::guiUpdate()
@@ -58,6 +63,14 @@ void Widget::guiUpdate()
     ui->doubleSpinBox_YY->setValue(rob[0].TCP_Coords[4]);
     ui->doubleSpinBox_ZZ->setValue(rob[0].TCP_Coords[5]);
 
+
+
+    //testgg.dataIn[0]
+    cout << (unsigned int)testgg.dataIn[0] << endl;
+
+    QString test;
+    test.setNum(testgg.strokeTime);
+    ui->label->setText(test);
 
 }
 
@@ -230,4 +243,25 @@ void Widget::animation()
 
 
     painter.drawText(rectText, Qt::AlignCenter, tr(pchar));
+}
+
+
+void Widget::on_clockwise_clicked()
+{
+    testgg.sendmsg('1');
+}
+
+void Widget::on_counter_clicked()
+{
+    testgg.sendmsg('2');
+}
+
+void Widget::on_stop_clicked()
+{
+    testgg.sendmsg('0');
+}
+
+void Widget::on_junk_clicked()
+{
+    testgg.sendmsg('a');
 }

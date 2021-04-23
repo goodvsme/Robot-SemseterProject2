@@ -66,7 +66,7 @@ void Widget::guiUpdate()
 
 
     //testgg.dataIn[0]
-    cout << (unsigned int)testgg.dataIn[0] << endl;
+
 
     QString test;
     test.setNum(testgg.strokeTime);

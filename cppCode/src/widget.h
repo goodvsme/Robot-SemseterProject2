@@ -4,6 +4,7 @@
 //Files
 #include "robotur5.h"
 #include "gripper.h"
+#include "database.h"
 
 //UI
 #include <QWidget>
@@ -30,17 +31,16 @@ public:
     Widget(QWidget *parent = nullptr);
 
 
-
-    vector<robotUR5> rob;
-
-
-
     virtual void paintEvent(QPaintEvent *event);
+
+
 
     ~Widget();
 
 
 
+    vector<robotUR5> robots;
+    vector<gripper> grippers;
 
 private slots:
 
@@ -60,10 +60,9 @@ private:
     void guiUpdate();
     void animation();
 
-    gripper testgg;
     Ui::Widget *ui;
     QTimer *timer;
-
+    database d;
 
 };
 #endif // WIDGET_H

@@ -25,6 +25,10 @@ private:
     MYSQL_RES* res;
 
     string query;
+    const char* q;
+    int qstate;
+    vector<robotUR5> ur5Bots;
+    vector<gripper> grippers;
 };
 
 #endif // DATABASE_H

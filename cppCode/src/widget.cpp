@@ -17,14 +17,14 @@ Widget::Widget(QWidget *parent)
 
 void Widget::setup(){
 
-    robotUR5 testff("f","127.0.0.1");
-    testff.modbusConnect();
-    rob.push_back(testff);
-    rob[0].modbusUpdateCoords();
 
+    robots = d.getRobots();
+    grippers = d.getGrippers();
 
-    testgg.setAddress("/dev/ttyUSB0");
-
+    for(unsigned long i = 0; i<robots.size();i++){
+        robots[i].modbusConnect();
+        robots[i].modbusUpdateCoords();
+    }
 }
 
 
@@ -46,31 +46,35 @@ Widget::~Widget()
 
 void Widget::dataUpdate()
 {
-    rob[0].modbusConnect();
-    rob[0].modbusUpdateCoords();
-    rob[0].modbusDisconnect();
+    robots[0].modbusConnect();
+    robots[0].modbusUpdateCoords();
+    robots[0].modbusDisconnect();
 
-    testgg.readSerial();
+    grippers[0].readSerial();
 }
 
 void Widget::guiUpdate()
 {
 
-    ui->doubleSpinBox_X->setValue(rob[0].TCP_Coords[0]);
-    ui->doubleSpinBox_Y->setValue(rob[0].TCP_Coords[1]);
-    ui->doubleSpinBox_Z->setValue(rob[0].TCP_Coords[2]);
-    ui->doubleSpinBox_XX->setValue(rob[0].TCP_Coords[3]);
-    ui->doubleSpinBox_YY->setValue(rob[0].TCP_Coords[4]);
-    ui->doubleSpinBox_ZZ->setValue(rob[0].TCP_Coords[5]);
+    ui->doubleSpinBox_X->setValue(robots[0].TCP_Coords[0]);
+    ui->doubleSpinBox_Y->setValue(robots[0].TCP_Coords[1]);
+    ui->doubleSpinBox_Z->setValue(robots[0].TCP_Coords[2]);
+    ui->doubleSpinBox_XX->setValue(robots[0].TCP_Coords[3]);
+    ui->doubleSpinBox_YY->setValue(robots[0].TCP_Coords[4]);
+    ui->doubleSpinBox_ZZ->setValue(robots[0].TCP_Coords[5]);
 
 
 
     //testgg.dataIn[0]
-    cout << (unsigned int)testgg.dataIn[0] << endl;
+    cout << (unsigned int)grippers[0].dataIn[0] << endl;
 
-    QString test;
-    test.setNum(testgg.strokeTime);
-    ui->label->setText(test);
+
+
+
+
+
+    //ui->label->setText(QString::fromStdString(robots[0].robotName));
+    ui->label->setText(QString::fromStdString(grippers[0].portCOM));
 
 }
 
@@ -248,20 +252,20 @@ void Widget::animation()
 
 void Widget::on_clockwise_clicked()
 {
-    testgg.sendmsg('1');
+    grippers[0].sendmsg('1');
 }
 
 void Widget::on_counter_clicked()
 {
-    testgg.sendmsg('2');
+    grippers[0].sendmsg('2');
 }
 
 void Widget::on_stop_clicked()
 {
-    testgg.sendmsg('0');
+    grippers[0].sendmsg('0');
 }
 
 void Widget::on_junk_clicked()
 {
-    testgg.sendmsg('a');
+    grippers[0].sendmsg('a');
 }

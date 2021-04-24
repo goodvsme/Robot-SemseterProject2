@@ -20,11 +20,13 @@ public:
     ~robotUR5();
 
     array <float,6> TCP_Coords;
-private:
-    bool connected = 0;
 
     string robotName;
     string tcpUR5IP;
+private:
+    bool connected = 0;
+
+
 
 
 

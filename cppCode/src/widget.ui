@@ -25,146 +25,11 @@
   <property name="windowTitle">
    <string>Widget</string>
   </property>
-  <widget class="QDoubleSpinBox" name="doubleSpinBox_X">
-   <property name="geometry">
-    <rect>
-     <x>720</x>
-     <y>240</y>
-     <width>101</width>
-     <height>26</height>
-    </rect>
-   </property>
-   <property name="minimum">
-    <double>-999.000000000000000</double>
-   </property>
-   <property name="maximum">
-    <double>999.000000000000000</double>
-   </property>
-  </widget>
-  <widget class="QDoubleSpinBox" name="doubleSpinBox_Y">
-   <property name="geometry">
-    <rect>
-     <x>720</x>
-     <y>300</y>
-     <width>101</width>
-     <height>26</height>
-    </rect>
-   </property>
-   <property name="minimum">
-    <double>-999.000000000000000</double>
-   </property>
-   <property name="maximum">
-    <double>999.000000000000000</double>
-   </property>
-  </widget>
-  <widget class="QDoubleSpinBox" name="doubleSpinBox_Z">
-   <property name="geometry">
-    <rect>
-     <x>720</x>
-     <y>360</y>
-     <width>101</width>
-     <height>26</height>
-    </rect>
-   </property>
-   <property name="minimum">
-    <double>-999.000000000000000</double>
-   </property>
-   <property name="maximum">
-    <double>999.000000000000000</double>
-   </property>
-  </widget>
-  <widget class="QDoubleSpinBox" name="doubleSpinBox_XX">
-   <property name="geometry">
-    <rect>
-     <x>840</x>
-     <y>240</y>
-     <width>101</width>
-     <height>26</height>
-    </rect>
-   </property>
-   <property name="minimum">
-    <double>-999.000000000000000</double>
-   </property>
-   <property name="maximum">
-    <double>999.000000000000000</double>
-   </property>
-  </widget>
-  <widget class="QDoubleSpinBox" name="doubleSpinBox_YY">
-   <property name="geometry">
-    <rect>
-     <x>840</x>
-     <y>300</y>
-     <width>101</width>
-     <height>26</height>
-    </rect>
-   </property>
-   <property name="minimum">
-    <double>-999.000000000000000</double>
-   </property>
-   <property name="maximum">
-    <double>999.000000000000000</double>
-   </property>
-  </widget>
-  <widget class="QDoubleSpinBox" name="doubleSpinBox_ZZ">
-   <property name="geometry">
-    <rect>
-     <x>840</x>
-     <y>360</y>
-     <width>101</width>
-     <height>26</height>
-    </rect>
-   </property>
-   <property name="minimum">
-    <double>-999.000000000000000</double>
-   </property>
-   <property name="maximum">
-    <double>999.000000000000000</double>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="clockwise">
-   <property name="geometry">
-    <rect>
-     <x>430</x>
-     <y>370</y>
-     <width>89</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>clockwise</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="stop">
-   <property name="geometry">
-    <rect>
-     <x>430</x>
-     <y>440</y>
-     <width>89</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>stop</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="counter">
-   <property name="geometry">
-    <rect>
-     <x>550</x>
-     <y>370</y>
-     <width>89</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>counter</string>
-   </property>
-  </widget>
   <widget class="QPushButton" name="junk">
    <property name="geometry">
     <rect>
-     <x>550</x>
-     <y>440</y>
+     <x>10</x>
+     <y>510</y>
      <width>89</width>
      <height>25</height>
     </rect>
@@ -176,8 +41,8 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>480</x>
-     <y>150</y>
+     <x>110</x>
+     <y>510</y>
      <width>67</width>
      <height>17</height>
     </rect>
@@ -185,6 +50,211 @@
    <property name="text">
     <string>TextLabel</string>
    </property>
+  </widget>
+  <widget class="QWidget" name="horizontalLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>680</x>
+     <y>450</y>
+     <width>254</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QPushButton" name="counter">
+      <property name="text">
+       <string>counter</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="stop">
+      <property name="text">
+       <string>stop</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="clockwise">
+      <property name="text">
+       <string>clockwise</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="gridLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>690</x>
+     <y>118</y>
+     <width>261</width>
+     <height>111</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="1" column="1">
+     <widget class="QDoubleSpinBox" name="doubleSpinBox_Y">
+      <property name="minimum">
+       <double>-999.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>999.000000000000000</double>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QDoubleSpinBox" name="doubleSpinBox_XX">
+      <property name="minimum">
+       <double>-999.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>999.000000000000000</double>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QLabel" name="label_2">
+      <property name="text">
+       <string>TextLabel</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="3">
+     <widget class="QDoubleSpinBox" name="doubleSpinBox_Z">
+      <property name="minimum">
+       <double>-999.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>999.000000000000000</double>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="3">
+     <widget class="QDoubleSpinBox" name="doubleSpinBox_ZZ">
+      <property name="minimum">
+       <double>-999.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>999.000000000000000</double>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="3">
+     <widget class="QLabel" name="label_4">
+      <property name="text">
+       <string>TextLabel</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="label_5">
+      <property name="text">
+       <string>TextLabel</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QLabel" name="label_6">
+      <property name="text">
+       <string>TextLabel</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QDoubleSpinBox" name="doubleSpinBox_YY">
+      <property name="minimum">
+       <double>-999.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>999.000000000000000</double>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QDoubleSpinBox" name="doubleSpinBox_X">
+      <property name="minimum">
+       <double>-999.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>999.000000000000000</double>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="3">
+     <widget class="QLabel" name="label_7">
+      <property name="text">
+       <string>TextLabel</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="label_3">
+      <property name="text">
+       <string>TextLabel</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="gridLayoutWidget_2">
+   <property name="geometry">
+    <rect>
+     <x>690</x>
+     <y>10</y>
+     <width>261</width>
+     <height>111</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="0" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QLabel" name="label_8">
+        <property name="text">
+         <string>TextLabel</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="lineEdit"/>
+      </item>
+     </layout>
+    </item>
+    <item row="1" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <item>
+       <widget class="QLabel" name="label_9">
+        <property name="text">
+         <string>TextLabel</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="lineEdit_2"/>
+      </item>
+     </layout>
+    </item>
+    <item row="2" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <item>
+       <widget class="QPushButton" name="pushButton">
+        <property name="text">
+         <string>PushButton</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_2">
+        <property name="text">
+         <string>PushButton</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
   </widget>
  </widget>
  <resources/>

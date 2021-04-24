@@ -79,6 +79,7 @@ void gripper::readSerial(){
         if(dataIn[0] == 0){
             stop = 1;
             amp = 0;
+            dataIn[0]=128;
 
         }else{
             amp = ((5/637.5)*(int)dataIn[0]-1);
@@ -91,8 +92,8 @@ void gripper::readSerial(){
 
 
         }
-
     }
+    cout << amp << endl;
 }
 
 

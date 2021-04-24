@@ -66,11 +66,6 @@ void Widget::guiUpdate()
 
 
     //testgg.dataIn[0]
-    cout << (unsigned int)grippers[0].dataIn[0] << endl;
-
-
-
-
 
 
     //ui->label->setText(QString::fromStdString(robots[0].robotName));

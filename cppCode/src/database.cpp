@@ -41,14 +41,11 @@ vector<robotUR5> database::getRobots()
 
 }
 
-bool database::setRobot(int index, string newIP)
-{
 
-}
 
-vector<gripper> database::getGrippers()
+vector<string> database::getGrippers()
 {
-    grippers.clear();
+    gripperports.clear();
     string port;
 
     query = "select Gripper.COM_port from UR5, Orders, Gripper where UR5.robot_id=Orders.robot_id and Orders.gripper_id=Gripper.gripper_id order by UR5.robot_id";
@@ -61,22 +58,50 @@ vector<gripper> database::getGrippers()
         while ((row = mysql_fetch_row(res))){
             port = row[0];
             //inputting the robots in list
-            gripper i(port);
-            grippers.push_back(i);
+            gripperports.push_back(port);
 
         }
-        return grippers;
+        return gripperports;
     }
     else{
-        gripper i("/dev/ttyUSB0");
-        grippers.push_back(i);
+        gripperports.push_back("/dev/ttyUSB0");
 
         cout << "Query failed: " << mysql_error(conn) << endl;
-        return grippers;
+        return gripperports;
+    }
+}
+void database::sendData(int test,int rAg, double ampP, double ampA, int stroke, double force, double time, bool dir){
+
+    string max;
+
+    query = "select max(gripper_data_id) from Gripper_Data";
+    q = query.c_str();
+    qstate = mysql_query(conn, q);
+    if (!qstate)
+    {
+        res = mysql_store_result(conn);
+
+        while ((row = mysql_fetch_row(res))){
+            max = row[0];
+        }
+    }
+    else{
+        max = "1";
+
+        cout << "Query failed: " << mysql_error(conn) << endl;
+    }
+
+    stringstream s(max);
+    int maxx = 0;
+    s >> maxx;
+
+    query = "insert into Gripper_Data values ("+ to_string(maxx+1) +","+ to_string(test) +","+ to_string(ampP) +","+ to_string(ampA) +","+ to_string(stroke) +","+ to_string(force) +","+ to_string(time) +","+ to_string(dir) +","+ to_string(rAg+1) +","+ to_string(rAg+1) +");";
+    q = query.c_str();
+    qstate = mysql_query(conn, q);
+    if (qstate != 0)
+        cout << "Update failed. " << mysql_error(conn) << endl;
+    else{
+        cout << "send" << endl;
     }
 }
 
-bool database::setGripper(int index, string newCOM)
-{
-
-}

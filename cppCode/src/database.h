@@ -5,6 +5,7 @@
 #include <vector>
 #include "robotur5.h"
 #include "gripper.h"
+#include <sstream>
 
 using namespace std;
 
@@ -13,9 +14,8 @@ class database
 public:
     database();
     vector<robotUR5>getRobots();
-    bool setRobot(int index,string newIP);
-    vector<gripper>getGrippers();
-    bool setGripper(int index,string newCOM);
+    vector<string>getGrippers();
+    void sendData(int test,int rAg, double ampP, double ampA, int stroke, double force, double time, bool dir);
 
 private:
 
@@ -28,7 +28,7 @@ private:
     const char* q;
     int qstate;
     vector<robotUR5> ur5Bots;
-    vector<gripper> grippers;
+    vector<string> gripperports;
 };
 
 #endif // DATABASE_H

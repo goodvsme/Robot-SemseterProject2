@@ -5,16 +5,21 @@ gripper::gripper()
 
 }
 
-gripper::gripper(string inP)
-{
-    setAddress(inP);
-}
 
 bool gripper::setAddress(string inPort)
 {
+
     portCOM = inPort;
     //portCOM.c_str()
-    serial_port  = open("/dev/ttyUSB0", O_RDWR);
+    serial_port  = open("/dev/ttyUSB0", O_RDWR | O_NOCTTY | O_NDELAY);
+
+
+    FD_ZERO(&fdset);
+    FD_SET(serial_port, &fdset);
+
+
+    tv.tv_sec = 0;
+    tv.tv_usec = 0;
 
     // Create new termios struc, we call it 'tty' for convention
     struct termios tty;
@@ -74,14 +79,29 @@ bool gripper::setAddress(string inPort)
 
 
 void gripper::readSerial(){
+
+    int ret = select(serial_port +1, &fdset, 0, 0, &tv);
+
+    if(!ret){return;}
+
     if(stop == 0){
         read(serial_port, &dataIn, sizeof(dataIn));
         if(dataIn[0] == 0){
             stop = 1;
             amp = 0;
+            //send data
+            //reset variabals
             dataIn[0]=128;
 
-        }else{
+
+        }else if(dataIn[0]==1){
+            amp = 0;
+            //send data
+            //reset variabals
+            dataIn[0]=128;
+
+        }
+        else{
             amp = ((5/637.5)*(int)dataIn[0]-1);
             avg_amp = (abs(amp)+avg_amp)/2;
             if(abs(amp)>peak_amp){
@@ -89,11 +109,12 @@ void gripper::readSerial(){
             }
             strokeTime+=0.05;
             force=(0.3*(58/1)*490)/(55*sin(1.571-(1.222/26)*(26-strokeTime))+45*cos(0.611));
-
-
         }
     }
-    cout << amp << endl;
+
+
+
+
 }
 
 

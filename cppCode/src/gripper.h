@@ -19,7 +19,6 @@ class gripper
 {
 public:
     gripper();
-    gripper(string inP);
     bool setAddress(string portCOM);
     void readSerial();
     void closeSerial();
@@ -39,9 +38,9 @@ public:
 private:
     int serial_port;
 
-    // Allocate memory for read buffer, set size according to your needs
 
-
+    fd_set fdset;
+    struct timeval tv;
 
 
     bool stop = 1;

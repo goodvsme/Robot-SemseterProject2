@@ -38,8 +38,9 @@ public:
     ~Widget();
 
 
-
+    gripper g;
     vector<robotUR5> robots;
+    vector<string> gripperports;
     vector<gripper> grippers;
 
 private slots:
@@ -53,6 +54,8 @@ private slots:
     void on_stop_clicked();
 
     void on_junk_clicked();
+
+    void on_pushButton_clicked();
 
 private:
     void setup();

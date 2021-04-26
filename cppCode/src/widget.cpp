@@ -9,8 +9,8 @@ Widget::Widget(QWidget *parent)
 {
     ui->setupUi(this);
     timer = new QTimer(this);
-    connect(timer,SIGNAL(timeout()),this,SLOT(dataUpdate()));
-    timer->start(50);
+    //connect(timer,SIGNAL(timeout()),this,SLOT(dataUpdate()));
+    //timer->start(50);
     setup();
 
 }
@@ -19,11 +19,18 @@ void Widget::setup(){
 
 
     robots = d.getRobots();
-    grippers = d.getGrippers();
+    gripperports = d.getGrippers();
 
+
+    for(unsigned long i = 0; i<gripperports.size();i++){
+        gripper g;
+        grippers.push_back(g);
+        grippers[i].setAddress(gripperports[i]);
+    }
     for(unsigned long i = 0; i<robots.size();i++){
         robots[i].modbusConnect();
         robots[i].modbusUpdateCoords();
+        robots[i].modbusDisconnect();
     }
 }
 
@@ -31,7 +38,7 @@ void Widget::setup(){
 void Widget::paintEvent(QPaintEvent *event)
 {
 
-    //dataUpdate();
+    dataUpdate();
     guiUpdate();
 
     animation();
@@ -41,6 +48,7 @@ void Widget::paintEvent(QPaintEvent *event)
 
 Widget::~Widget()
 {
+    //grippers[0].closeSerial();
     delete ui;
 }
 
@@ -51,6 +59,8 @@ void Widget::dataUpdate()
     robots[0].modbusDisconnect();
 
     grippers[0].readSerial();
+    //d.sendData(int test,int rAg, double ampP, double ampA, int stroke, double force, double time, bool dir);
+
 }
 
 void Widget::guiUpdate()
@@ -263,4 +273,9 @@ void Widget::on_stop_clicked()
 void Widget::on_junk_clicked()
 {
     grippers[0].sendmsg('a');
+}
+
+void Widget::on_pushButton_clicked()
+{
+
 }

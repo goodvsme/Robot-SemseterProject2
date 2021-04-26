@@ -1,0 +1,140 @@
+
+#define F_CPU 18432000UL
+#include <avr/io.h>
+#include <util/delay.h>
+#include <stdio.h>
+
+#define BAUD_PRESCALE_DOUBLE (((F_CPU / (USART_BAUDRATE * 8UL))) - 1)
+
+int stop = 0;
+unsigned char oldDir = 0;
+
+void UART_init(long USART_BAUDRATE){
+	UBRR1H = (BAUD_PRESCALE_DOUBLE >> 8);		//Upper 8 bits of baud rate
+	UBRR1L = BAUD_PRESCALE_DOUBLE & 0x00FF;		//Lower 8 bits of baud rate
+	UCSR1B = (1 << RXEN1) | (1 << TXEN1);		//Enabling receiving and transmitting
+	UCSR1C = (3 << UCSZ10);						//Character sizes are 8-bit
+	UCSR1A = (1 << U2X1);						//Enable double speed
+}
+
+void ADCsetup(){
+	
+	DDRA &= ~(1 << PA0);						//Set PA0 as input
+	
+	ADCSRA = (1 << ADEN) | (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);					//Enable ADC and set prescalar
+	//ADCSRA = 0b10000111;
+
+	ADMUX &= ~((1 << MUX0) | (1 << MUX1) | (1 << MUX2) | (1 << MUX3) | (1 << MUX4));	//Choose ADC0 (PA0) as channel
+	ADMUX |= (1 << ADLAR);						//Left adjust ADC
+	ADMUX &= ~(1 << REFS1);
+	ADMUX |= (1 << REFS0);						//Select AVCC as reference
+	//ADMUX = 0b01000000;
+	
+	DIDR0 |= (1 << AIN0D);						//Disable digital pin to reduce power consumption and noise
+}
+
+void PWMsetup(){
+	DDRD |= (1 << PD5);							//PWM as output
+	DDRC |= (1 << PC2);							//DIR as output
+	
+	TCCR1A |= (1 << WGM10);						//Wave Generator Mode (Fast PWM mode)
+	TCCR1A |= (1 << WGM11);
+	
+	TCCR1A |= (1 << COM1A0);					//Compare match (inverting mode)
+	TCCR1A |= (1 << COM1A1);
+	
+	TCCR1B |= (1 << CS10);						//Clock select (No prescaling)
+	
+	OCR1A = 1023;								//Turn off motor
+}
+
+unsigned char UART_Rx(){
+	while(!(UCSR1A & (1 << RXC1)));				//Waiting for stuff to be received
+	//UCSR1A |= (1 << RXC1);						//Clear the flag
+	return UDR1;								//Return the data
+}
+
+void UART_Tx(unsigned char msg){
+	while(!(UCSR1A & (1 << UDRE1)));			//Waiting for receiver to get ready
+	UDR1 = msg;									//Send msg
+}
+
+void setDir(){
+	
+	unsigned char c = UART_Rx();				//Receive value from computer
+	
+	if((c == '1' && oldDir == '2') || (c == '2' && oldDir == '1')){
+		UART_Tx(0);
+	}
+	
+	oldDir = c;
+	
+	switch(c){									//Check value of the message
+		case '0':
+		PORTC &= ~(1 << PC2);					//Turn clockwise
+		stop = 1;								//Emergency stop
+		OCR1A = 1023;							//0V out (stop motor)
+		break;
+		
+		case '1':
+		PORTC &= ~(1 << PC2);					//Turn clockwise
+		stop = 0;								//No emergency stop
+		OCR1A = 0;								//24V out (full speed)
+		_delay_ms(150);							//Wait for possible motor stop values to go away
+		break;
+		
+		case '2':
+		PORTC |= (1 << PC2);					//Turn counter-clockwise
+		stop = 0;								//No emergency stop
+		OCR1A = 0;								//24V out (full speed)
+		_delay_ms(150);							//Wait for possible motor stop values to go away
+		break;
+		
+		default:								//Default
+		PORTC &= ~(1 << PC2);					//Turn clockwise
+		stop = 1;								//Emergency stop
+		OCR1A = 1023;							//0V out (stop motor)
+		break;
+	}
+}
+
+
+void run(){
+	
+	ADCSRA |= (1 << ADSC);						//Start conversion (start value for while loop)
+	while(ADCSRA & (1<<ADSC));					//Wait for conversion to finish
+	
+	//while(410 < ADC && ADC < 610){
+	//while((410 << 6) < ADC && ADC (610 << 6)){
+	while((26240 < ADC) && (ADC < 39040) && (stop == 0)){			//Test if current is within the threshold (both directions) and no stop
+
+		ADCSRA |= (1 << ADSC);					//Start conversion
+		while(ADCSRA & (1 << ADSC));			//Wait for conversion to finish
+		
+		_delay_ms(50);							//Data flow-rate control (~20 times a second)
+		
+		UART_Tx((unsigned char)ADCH);			//Cast upper 8 bits to unsigned char and transmit it
+		
+		if((UCSR1A & (1 << RXC1))){				//Test for incoming data
+			setDir();							//Change direction or emergency stop
+		}
+	}
+	UART_Tx(1);									//Transmit finish value
+	OCR1A = 1023;								//Stop motor
+}
+
+
+int main(){
+	
+	ADCsetup();									//Setup ADC
+	
+	PWMsetup();									//Setup PWM
+	
+	UART_init(115200);							//Initialize UART with 115200 baud
+	
+	while (1){
+
+		setDir();
+		run();									//Turn on motor
+	}
+}  

@@ -15,9 +15,6 @@ robotUR5::robotUR5(string inN, string inIP)
      robotName = inN;
      tcpUR5IP = inIP;
 
-
-
-
 }
 
 

@@ -1,5 +1,6 @@
 #ifndef GRIPPER_H
 #define GRIPPER_H
+#include "database.h"
 
 //general includes
 #include <iostream>
@@ -20,7 +21,7 @@ class gripper
 public:
     gripper();
     bool setAddress(string portCOM);
-    void readSerial();
+    void readSerial(class database *inwrite, int testid, int rAgID);
     void closeSerial();
     void sendmsg(unsigned char i);
     ~gripper();
@@ -34,7 +35,11 @@ public:
     float peak_amp=0;
     float force=0;
     float strokeTime=0.05;
-    bool direction;
+    bool direction=0;
+    float angleTime = 0.05*direction;
+    float angle = 0;
+
+    const float speed = 26;
 private:
     int serial_port;
 

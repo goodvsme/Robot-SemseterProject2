@@ -57,11 +57,15 @@ private slots:
 
     void on_pushButton_clicked();
 
+    void on_spinBox_valueChanged(int arg1);
+
 private:
     void setup();
 
     void guiUpdate();
     void animation();
+
+    int test_id;
 
     Ui::Widget *ui;
     QTimer *timer;

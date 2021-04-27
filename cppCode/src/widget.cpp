@@ -58,7 +58,7 @@ void Widget::dataUpdate()
     robots[0].modbusUpdateCoords();
     robots[0].modbusDisconnect();
 
-    grippers[0].readSerial();
+    grippers[0].readSerial(&d, test_id, 0);
     //d.sendData(int test,int rAg, double ampP, double ampA, int stroke, double force, double time, bool dir);
 
 }
@@ -91,7 +91,7 @@ void Widget::animation()
     int h = size().height();
     int w = size().width();
 
-    int ang = 0;//ur5Bots[ui->comboBox->currentIndex()].ang;
+    int ang = grippers[0].angle;
 
     //making the two pen's
     QPen blue;
@@ -278,4 +278,9 @@ void Widget::on_junk_clicked()
 void Widget::on_pushButton_clicked()
 {
 
+}
+
+void Widget::on_spinBox_valueChanged(int arg1)
+{
+    test_id = ui->spinBox->value();
 }

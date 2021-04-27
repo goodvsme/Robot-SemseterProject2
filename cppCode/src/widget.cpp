@@ -17,7 +17,6 @@ Widget::Widget(QWidget *parent)
 
 void Widget::setup(){
 
-
     robots = d.getRobots();
     gripperports = d.getGrippers();
 

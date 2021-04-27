@@ -81,8 +81,7 @@ bool gripper::setAddress(string inPort)
 void gripper::readSerial(class database *inwrite, int testid, int rAgID){
 
     int ret = select(serial_port +1, &fdset, 0, 0, &tv);
-
-    if(!ret){return;}
+    if(ret){return;}
 
     if(stop == 0){
         read(serial_port, &dataIn, sizeof(dataIn));
@@ -94,9 +93,7 @@ void gripper::readSerial(class database *inwrite, int testid, int rAgID){
             avg_amp=0;
             peak_amp=0;
             force=0;
-            strokeTime=0.05;
-
-
+            strokeTime=0;
 
             dataIn[0]=128;
 
@@ -110,15 +107,13 @@ void gripper::readSerial(class database *inwrite, int testid, int rAgID){
             avg_amp=0;
             peak_amp=0;
             force=0;
-            strokeTime=0.05;
-
-
-
+            strokeTime=0;
 
             dataIn[0]=128;
 
         }
         else{
+            if(dataIn[0] == 128){return;};
             amp = ((5/637.5)*(int)dataIn[0]-1);
             avg_amp = (abs(amp)+avg_amp)/2;
             if(abs(amp)>peak_amp){
@@ -128,19 +123,14 @@ void gripper::readSerial(class database *inwrite, int testid, int rAgID){
             if(0>amp){
                 direction = 1;
             }else{
-                direction = 0;
+                direction = -1;
             }
             angleTime += 0.05*direction;
-            force=(0.3*(58/1)*490)/(55*sin(1.571-(1.222/speed)*(speed-angleTime))+45*cos(0.611));
             angle = (70/speed)*angleTime;
-
+            //force=(0.3*(58/1)*490)/(55*sin(1.571-(1.222/speed)*(speed-angleTime))+45*cos(0.611));
+            force = (0.3*(58/1)*490)/(55*sin(angle*(M_PI/180))+45*cos(35*(M_PI/180)));
         }
-        cout << angle << endl;
     }
-
-
-
-
 }
 
 

@@ -27,16 +27,16 @@ public:
     ~gripper();
 
     string portCOM;
-    unsigned char dataIn [1];
+    unsigned char dataIn [1] = {128};
 
 
     float amp=0;
     float avg_amp=0;
     float peak_amp=0;
     float force=0;
-    float strokeTime=0.05;
-    bool direction=0;
-    float angleTime = 0.05*direction;
+    float strokeTime=0;
+    int direction = 0;
+    float angleTime = 0;
     float angle = 0;
 
     const float speed = 26;

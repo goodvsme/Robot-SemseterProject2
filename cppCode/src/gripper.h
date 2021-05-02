@@ -44,11 +44,6 @@ public:
 private:
     int serial_port;
 
-
-    fd_set fdset;
-    struct timeval tv;
-
-
     bool stop = 1;
 
 

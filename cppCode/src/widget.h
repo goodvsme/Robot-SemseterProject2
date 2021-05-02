@@ -66,9 +66,10 @@ private:
     void animation();
 
     int test_id;
+    bool toggle = 1;
 
     Ui::Widget *ui;
-    QTimer *timer;
+
     database d;
 
 };

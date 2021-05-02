@@ -39,13 +39,12 @@ bool robotUR5::modbusConnect()
         read_TCP_Coords = new uint16_t[length_of_header * sizeof(uint16_t) + length_of_TCP_return_values * sizeof(uint16_t)];
 
         directions = new uint8_t [(length_of_header * sizeof(uint8_t) + 1 * sizeof(uint8_t))];
-        run = new uint8_t [(length_of_header * sizeof(uint8_t) + 1 * sizeof(uint8_t))];
+        runn = new uint8_t [(length_of_header * sizeof(uint8_t) + 1 * sizeof(uint8_t))];
         finished = new uint8_t [(length_of_header * sizeof(uint8_t) + 1 * sizeof(uint8_t))];
 
+        connected = 1;
 
         finished[0]=0;
-
-        connected = 1;
 
         return 1;
 
@@ -65,7 +64,7 @@ void robotUR5::modbusUpdateCoords()
 
         //Run
         int bit_read_adress_run = 141;
-        rc = modbus_read_bits(ctx, bit_read_adress_run, 1, run);
+        rc = modbus_read_bits(ctx, bit_read_adress_run, 1, runn);
         if (rc != 1) {
             printf("ERROR modbus_read_bits (%d)\n", rc);
             printf("Address = %d, ADDRESS_START = %d\n", bit_read_adress_run, 1);
@@ -112,6 +111,12 @@ void robotUR5::modbusUpdateCoords()
     }
 }
 
+
+void robotUR5::setFinished(bool f)
+{
+    finished[0] = f;
+}
+
 void robotUR5::modbusDisconnect()
 {
 
@@ -120,12 +125,14 @@ void robotUR5::modbusDisconnect()
     modbus_free(ctx);
 
     delete[] read_TCP_Coords;
-    delete[] run;
+    delete[] runn;
     delete[] directions;
     delete[] finished;
     }
 
 }
+
+
 
 robotUR5::~robotUR5(){
     modbusDisconnect();

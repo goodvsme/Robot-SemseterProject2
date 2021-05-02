@@ -1,6 +1,7 @@
 #ifndef GRIPPER_H
 #define GRIPPER_H
 #include "database.h"
+#include "robotur5.h"
 
 //general includes
 #include <iostream>
@@ -21,13 +22,13 @@ class gripper
 public:
     gripper();
     bool setAddress(string portCOM);
-    void readSerial(class database *inwrite, int testid, int rAgID);
+    bool readSerial(class database *inwrite, int testid, int rAgID);
     void closeSerial();
     void sendmsg(unsigned char i);
     ~gripper();
 
     string portCOM;
-    unsigned char dataIn [1] = {128};
+    unsigned char dataIn[1] = {128};
 
 
     float amp=0;

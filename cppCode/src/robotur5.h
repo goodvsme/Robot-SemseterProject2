@@ -16,6 +16,7 @@ public:
     void modbusUpdateCoords();
     bool modbusConnect();
     void modbusDisconnect();
+    void setFinished(bool f);
 
     ~robotUR5();
 
@@ -23,8 +24,17 @@ public:
 
     string robotName;
     string tcpUR5IP;
-private:
+
+    uint16_t *read_TCP_Coords;
+    uint8_t *directions;
+    uint8_t *runn;
+    uint8_t *finished;
+
     bool connected = 0;
+
+
+private:
+
 
 
 
@@ -37,10 +47,7 @@ private:
 
     int length_of_TCP_return_values = 6; // The amount of values returned from later register reads
 
-    uint16_t *read_TCP_Coords;
-    uint8_t *directions;
-    uint8_t *run;
-    uint8_t *finished;
+
 };
 
 #endif // ROBOTUR5_H

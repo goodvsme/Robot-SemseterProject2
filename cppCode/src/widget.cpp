@@ -8,9 +8,7 @@ Widget::Widget(QWidget *parent)
     , ui(new Ui::Widget)
 {
     ui->setupUi(this);
-    timer = new QTimer(this);
-    //connect(timer,SIGNAL(timeout()),this,SLOT(dataUpdate()));
-    //timer->start(50);
+
     setup();
 
 }
@@ -20,6 +18,8 @@ void Widget::setup(){
     robots = d.getRobots();
     gripperports = d.getGrippers();
 
+    test_id = ui->spinBox->value();
+
 
     for(unsigned long i = 0; i<gripperports.size();i++){
         gripper g;
@@ -28,8 +28,9 @@ void Widget::setup(){
     }
     for(unsigned long i = 0; i<robots.size();i++){
         robots[i].modbusConnect();
+        robots[i].setFinished(0);
         robots[i].modbusUpdateCoords();
-        robots[i].modbusDisconnect();
+        //robots[i].modbusDisconnect();
     }
 }
 
@@ -53,12 +54,44 @@ Widget::~Widget()
 
 void Widget::dataUpdate()
 {
-    robots[0].modbusConnect();
-    robots[0].modbusUpdateCoords();
-    robots[0].modbusDisconnect();
 
-    grippers[0].readSerial(&d, test_id, 0);
-    //d.sendData(int test,int rAg, double ampP, double ampA, int stroke, double force, double time, bool dir);
+    if(robots[0].connected){
+
+        if(robots[0].runn[0]==1){
+
+            if(toggle){
+                grippers[0].sendmsg('2');
+                toggle = 0;
+            }
+
+            bool r = grippers[0].readSerial(&d, test_id, 0);
+            //cout << "readSerial" << r << endl;
+            if(r){
+                //cout << "setF" << endl;
+                robots[0].setFinished(1);
+                robots[0].modbusUpdateCoords();
+                sleep(1);
+                robots[0].setFinished(0);
+                robots[0].modbusUpdateCoords();
+                toggle = 1;
+            }
+
+        }
+    }
+
+
+    //robots[0].modbusConnect();
+    //robots[0].finished[0] = 0;
+    robots[0].modbusUpdateCoords();
+
+    //robots[0].modbusDisconnect();
+
+
+
+
+
+
+
 
 }
 
@@ -76,9 +109,11 @@ void Widget::guiUpdate()
 
     //testgg.dataIn[0]
 
-
+    ui->label->setText(QString::fromStdString(to_string(grippers[0].strokeTime)));
     //ui->label->setText(QString::fromStdString(robots[0].robotName));
-    ui->label->setText(QString::fromStdString(grippers[0].portCOM));
+
+    //ui->label->setText(QString::fromStdString(to_string((bool)(robots[0].run[0]))));
+
 
 }
 
@@ -271,7 +306,7 @@ void Widget::on_stop_clicked()
 
 void Widget::on_junk_clicked()
 {
-    grippers[0].sendmsg('a');
+    robots[0].setFinished(1);
 }
 
 void Widget::on_pushButton_clicked()

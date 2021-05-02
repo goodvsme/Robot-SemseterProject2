@@ -236,7 +236,7 @@
       <item>
        <widget class="QPushButton" name="clockwise">
         <property name="text">
-         <string>clockwise</string>
+         <string>open</string>
         </property>
        </widget>
       </item>

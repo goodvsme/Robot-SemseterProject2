@@ -78,59 +78,74 @@ bool gripper::setAddress(string inPort)
 }
 
 
-void gripper::readSerial(class database *inwrite, int testid, int rAgID){
-
-    int ret = select(serial_port +1, &fdset, 0, 0, &tv);
-    if(ret){return;}
-
-    if(stop == 0){
-        read(serial_port, &dataIn, sizeof(dataIn));
-        if(dataIn[0] == 0){
-            //send data
-            //inwrite->sendData(testid, rAgID, peak_amp, avg_amp, dataIn[0], force, strokeTime, direction);
-            //reset variabals
-            amp=0;
-            avg_amp=0;
-            peak_amp=0;
-            force=0;
-            strokeTime=0;
-
-            dataIn[0]=128;
+bool gripper::readSerial(class database *inwrite, int testid, int rAgID){
 
 
-        }else if(dataIn[0]==1){
-            stop = 1;
-            //send data
-            //inwrite->sendData(testid, rAgID, peak_amp, avg_amp, dataIn[0], force, strokeTime, direction);
-            //reset variabals
-            amp=0;
-            avg_amp=0;
-            peak_amp=0;
-            force=0;
-            strokeTime=0;
+        //int ret = select(serial_port +1, &fdset, 0, 0, &tv);
+        //cout<<"ret " << ret <<endl;
+        //cout<<"stop " << stop <<endl;
 
-            dataIn[0]=128;
+        //if(ret!=1){return 0;}
 
-        }
-        else{
-            if(dataIn[0] == 128){return;};
-            amp = ((5/637.5)*(int)dataIn[0]-1);
-            avg_amp = (abs(amp)+avg_amp)/2;
-            if(abs(amp)>peak_amp){
-                peak_amp=abs(amp);
+        if(stop == 0){
+
+            read(serial_port, &dataIn, sizeof(dataIn));
+            cout<<"dataIn[0] " << (int)dataIn[0] <<endl;
+            if(dataIn[0] == 0){
+                //send data
+                //cout << "d1" << endl;
+                inwrite->sendData(testid, rAgID, peak_amp, avg_amp, dataIn[0], force, strokeTime, direction);
+                //reset variabals
+                amp=0;
+                avg_amp=0;
+                peak_amp=0;
+                force=0;
+                strokeTime=0;
+
+                dataIn[0]=128;
+
+                return 1;
+
+            }else if(dataIn[0]==1){
+
+                stop = 1;
+
+
+                //send data
+                //cout << "d2" << endl;
+                inwrite->sendData(testid, rAgID, peak_amp, avg_amp, dataIn[0], force, strokeTime, direction);
+                //reset variabals
+                amp=0;
+                avg_amp=0;
+                peak_amp=0;
+                force=0;
+                strokeTime=0;
+
+                dataIn[0]=128;
+                return 1;
             }
-            strokeTime+=0.05; 
-            if(0>amp){
-                direction = 1;
-            }else{
-                direction = -1;
+            else{
+                //if(dataIn[0] == 128){return;};
+                amp = ((5/637.5)*(int)dataIn[0]-1);
+                avg_amp = (abs(amp)+avg_amp)/2;
+                if(abs(amp)>peak_amp){
+                    peak_amp=abs(amp);
+                }
+                strokeTime+=0.05;
+                if(0>amp){
+                    direction = 1;
+                }else{
+                    direction = -1;
+                }
+                angleTime += 0.05*direction;
+                angle = (70/speed)*angleTime;
+                //force=(0.3*(58/1)*490)/(55*sin(1.571-(1.222/speed)*(speed-angleTime))+45*cos(0.611));
+                force = (0.3*(58/1)*490)/(55*sin(angle*(M_PI/180))+45*cos(35*(M_PI/180)));
+
+                return 0;
             }
-            angleTime += 0.05*direction;
-            angle = (70/speed)*angleTime;
-            //force=(0.3*(58/1)*490)/(55*sin(1.571-(1.222/speed)*(speed-angleTime))+45*cos(0.611));
-            force = (0.3*(58/1)*490)/(55*sin(angle*(M_PI/180))+45*cos(35*(M_PI/180)));
         }
-    }
+        return 0;
 }
 
 

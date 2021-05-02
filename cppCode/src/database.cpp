@@ -84,36 +84,42 @@ vector<string> database::getGrippers()
 }
 void database::sendData(int test,int rAg, double ampP, double ampA, int stroke, double force, double time, bool dir){
 
-    string max;
+    if(conn == 0){
+        cout << "Update failed. " << endl;
+    }else{
+        string max;
 
-    query = "select max(gripper_data_id) from Gripper_Data";
-    q = query.c_str();
-    qstate = mysql_query(conn, q);
-    if (!qstate)
-    {
-        res = mysql_store_result(conn);
+        query = "select max(gripper_data_id) from Gripper_Data";
+        q = query.c_str();
+        qstate = mysql_query(conn, q);
+        if (!qstate)
+        {
+            res = mysql_store_result(conn);
 
-        while ((row = mysql_fetch_row(res))){
-            max = row[0];
+            while ((row = mysql_fetch_row(res))){
+                max = row[0];
+            }
+        }
+        else{
+            max = "1";
+
+            cout << "Query failed: " << mysql_error(conn) << endl;
+        }
+
+        stringstream s(max);
+        int maxx = 0;
+        s >> maxx;
+
+        query = "insert into Gripper_Data values ("+ to_string(maxx+1) +","+ to_string(test) +","+ to_string(ampP) +","+ to_string(ampA) +","+ to_string(stroke) +","+ to_string(force) +","+ to_string(time) +","+ to_string(dir) +","+ to_string(rAg+1) +","+ to_string(rAg+1) +");";
+        cout << query << endl;
+        q = query.c_str();
+        qstate = mysql_query(conn, q);
+        if (qstate != 0)
+            cout << "Update failed. " << mysql_error(conn) << endl;
+        else{
+            cout << "send" << endl;
         }
     }
-    else{
-        max = "1";
 
-        cout << "Query failed: " << mysql_error(conn) << endl;
-    }
-
-    stringstream s(max);
-    int maxx = 0;
-    s >> maxx;
-
-    query = "insert into Gripper_Data values ("+ to_string(maxx+1) +","+ to_string(test) +","+ to_string(ampP) +","+ to_string(ampA) +","+ to_string(stroke) +","+ to_string(force) +","+ to_string(time) +","+ to_string(dir) +","+ to_string(rAg+1) +","+ to_string(rAg+1) +");";
-    q = query.c_str();
-    qstate = mysql_query(conn, q);
-    if (qstate != 0)
-        cout << "Update failed. " << mysql_error(conn) << endl;
-    else{
-        cout << "send" << endl;
-    }
 }
 

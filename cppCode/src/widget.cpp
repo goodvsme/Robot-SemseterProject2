@@ -60,7 +60,7 @@ void Widget::dataUpdate()
         if(robots[0].runn[0]==1){
 
             if(toggle){
-                grippers[0].sendmsg('2');
+                grippers[0].sendmsg(robots[0].directions[0]+1);
                 toggle = 0;
             }
 

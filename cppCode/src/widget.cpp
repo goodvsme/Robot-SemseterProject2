@@ -70,7 +70,7 @@ void Widget::dataUpdate()
                 //cout << "setF" << endl;
                 robots[0].setFinished(1);
                 robots[0].modbusUpdateCoords();
-                sleep(1);
+                usleep(100000);
                 robots[0].setFinished(0);
                 robots[0].modbusUpdateCoords();
                 toggle = 1;

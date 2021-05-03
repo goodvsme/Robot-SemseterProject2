@@ -11,21 +11,12 @@ bool gripper::setAddress(string inPort)
 
     portCOM = inPort;
     //portCOM.c_str()
-    serial_port  = open("/dev/ttyUSB0", O_RDWR | O_NOCTTY | O_NDELAY);
-
-
-    FD_ZERO(&fdset);
-    FD_SET(serial_port, &fdset);
-
-
-    tv.tv_sec = 0;
-    tv.tv_usec = 0;
+    serial_port  = open("/dev/ttyUSB0", O_RDWR);
 
     // Create new termios struc, we call it 'tty' for convention
     struct termios tty;
 
     // Read in existing settings, and handle any error
-    cout<<tcgetattr(serial_port, &tty)<<endl;
     if(tcgetattr(serial_port, &tty) != 0) {
 
         printf("Error %i from tcgetattr: %s\n", errno, strerror(errno));
@@ -54,8 +45,8 @@ bool gripper::setAddress(string inPort)
     // tty.c_oflag &= ~OXTABS; // Prevent conversion of tabs to spaces (NOT PRESENT ON LINUX)
     // tty.c_oflag &= ~ONOEOT; // Prevent removal of C-d chars (0x004) in output (NOT PRESENT ON LINUX)
 
-    tty.c_cc[VTIME] = 1;    // Wait for up to 1s (10 deciseconds), returning as soon as any data is received.
-    tty.c_cc[VMIN] = 1;
+    tty.c_cc[VTIME] = 0;    // Wait for up to 1s (10 deciseconds), returning as soon as any data is received.
+    tty.c_cc[VMIN] = 0;
 
     fcntl(serial_port,F_SETFL,FNDELAY);
 
@@ -69,10 +60,6 @@ bool gripper::setAddress(string inPort)
         return 1;
     }
 
-    //1 close, 2 is open
-    //unsigned char msg []= {2};
-    //write(serial_port, msg, sizeof(msg));
-
     printf("%s\n", strerror(errno));
     return 0;
 }
@@ -80,20 +67,14 @@ bool gripper::setAddress(string inPort)
 
 bool gripper::readSerial(class database *inwrite, int testid, int rAgID){
 
-
-        //int ret = select(serial_port +1, &fdset, 0, 0, &tv);
-        //cout<<"ret " << ret <<endl;
-        //cout<<"stop " << stop <<endl;
-
-        //if(ret!=1){return 0;}
-
         if(stop == 0){
 
-            read(serial_port, &dataIn, sizeof(dataIn));
+            int datafr = read(serial_port, &dataIn, sizeof(dataIn));
+            if(datafr == 0){return 0;}
             cout<<"dataIn[0] " << (int)dataIn[0] <<endl;
-            if(dataIn[0] == 0){
+            if(dataIn[0] == 0){         //Change Direction
                 //send data
-                //cout << "d1" << endl;
+                cout << "d1" << endl;
                 inwrite->sendData(testid, rAgID, peak_amp, avg_amp, dataIn[0], force, strokeTime, direction);
                 //reset variabals
                 amp=0;
@@ -106,13 +87,11 @@ bool gripper::readSerial(class database *inwrite, int testid, int rAgID){
 
                 return 1;
 
-            }else if(dataIn[0]==1){
+            }else if(dataIn[0]==1){      //Stop
 
                 stop = 1;
 
-
-                //send data
-                //cout << "d2" << endl;
+                cout << "d2" << endl;
                 inwrite->sendData(testid, rAgID, peak_amp, avg_amp, dataIn[0], force, strokeTime, direction);
                 //reset variabals
                 amp=0;
@@ -124,8 +103,7 @@ bool gripper::readSerial(class database *inwrite, int testid, int rAgID){
                 dataIn[0]=128;
                 return 1;
             }
-            else{
-                //if(dataIn[0] == 128){return;};
+            else{               //Running
                 amp = ((5/637.5)*(int)dataIn[0]-1);
                 avg_amp = (abs(amp)+avg_amp)/2;
                 if(abs(amp)>peak_amp){
@@ -139,9 +117,7 @@ bool gripper::readSerial(class database *inwrite, int testid, int rAgID){
                 }
                 angleTime += 0.05*direction;
                 angle = (70/speed)*angleTime;
-                //force=(0.3*(58/1)*490)/(55*sin(1.571-(1.222/speed)*(speed-angleTime))+45*cos(0.611));
                 force = (0.3*(58/1)*490)/(55*sin(angle*(M_PI/180))+45*cos(35*(M_PI/180)));
-
                 return 0;
             }
         }

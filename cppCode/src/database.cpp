@@ -4,8 +4,8 @@
 database::database()
 {
     conn = mysql_init(0);
-    conn = mysql_real_connect(conn, "127.0.0.1", "root", "UbuJhJoefi99", "ur5Database", 3306, NULL, 0);
-
+    //conn = mysql_real_connect(conn, "127.0.0.1", "root", "UbuJhJoefi99", "ur5Database", 3306, NULL, 0);
+    conn = mysql_real_connect(conn, "127.0.0.1", "root", "Emil2000", "ur5Database", 3306, NULL, 0);
 }
 
 vector<robotUR5> database::getRobots()
@@ -20,7 +20,7 @@ vector<robotUR5> database::getRobots()
     }
     string navn;
     string ip;
-    query = "select UR5.navn,UR5.IP from UR5, Orders, Gripper where UR5.robot_id=Orders.robot_id and Orders.gripper_id=Gripper.gripper_id order by UR5.robot_id";
+    query = "select UR5.navn, UR5.IP from UR5 order by UR5.robot_id";
     q = query.c_str();
     qstate = mysql_query(conn, q);
     if (!qstate)
@@ -60,7 +60,7 @@ vector<string> database::getGrippers()
         cout << "Query failed: " << mysql_error(conn) << endl;
         return gripperports;
     }
-    query = "select Gripper.COM_port from UR5, Orders, Gripper where UR5.robot_id=Orders.robot_id and Orders.gripper_id=Gripper.gripper_id order by UR5.robot_id";
+    query = "select Gripper.COM_port from Gripper order by Gripper.Gripper_id";
     q = query.c_str();
     qstate = mysql_query(conn, q);
     if (!qstate)

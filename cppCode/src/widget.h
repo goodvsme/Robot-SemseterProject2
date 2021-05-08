@@ -17,6 +17,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <stdio.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }
@@ -52,10 +53,6 @@ private slots:
     void on_counter_clicked();
 
     void on_stop_clicked();
-
-    void on_junk_clicked();
-
-    void on_pushButton_clicked();
 
     void on_spinBox_valueChanged(int arg1);
 

@@ -105,9 +105,6 @@ void robotUR5::modbusUpdateCoords()
                 }
             }
         }
-
-
-
     }
 }
 

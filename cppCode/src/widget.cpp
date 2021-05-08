@@ -30,8 +30,15 @@ void Widget::setup(){
         robots[i].modbusConnect();
         robots[i].setFinished(0);
         robots[i].modbusUpdateCoords();
-        //robots[i].modbusDisconnect();
+
     }
+
+    for(unsigned long i = 0; i<robots.size();i++){
+        ui->comboBox->addItem(QString::fromStdString(robots[i].robotName));
+    }
+
+
+
 }
 
 
@@ -48,71 +55,63 @@ void Widget::paintEvent(QPaintEvent *event)
 
 Widget::~Widget()
 {
-    //grippers[0].closeSerial();
+
     delete ui;
 }
 
 void Widget::dataUpdate()
 {
 
-    if(robots[0].connected){
+    for(unsigned long i = 0; i<robots.size();i++){
+        if(robots[i].connected){
 
-        if(robots[0].runn[0]==1){
+            if(robots[i].runn[0]==1){
 
-            if(toggle){
-                grippers[0].sendmsg(robots[0].directions[0]+1);
-                toggle = 0;
+                if(toggle){
+                    string s=to_string(robots[i].directions[0]+1);
+                    unsigned char c[1];
+                    strcpy( (char*) c, s.c_str());
+                    grippers[i].sendmsg(c[0]);
+                    toggle = 0;
+                }
+
+                bool r = grippers[i].readSerial(&d, test_id, i);
+
+                if(r){
+                    robots[i].setFinished(1);
+                    robots[i].modbusUpdateCoords();
+                    sleep(1);
+                    robots[i].setFinished(0);
+                    robots[i].modbusUpdateCoords();
+                    toggle = 1;
+                }
+            }else{
+                grippers[i].readSerial(&d, test_id, i);
             }
 
-            bool r = grippers[0].readSerial(&d, test_id, 0);
-            //cout << "readSerial" << r << endl;
-            if(r){
-                //cout << "setF" << endl;
-                robots[0].setFinished(1);
-                robots[0].modbusUpdateCoords();
-                usleep(100000);
-                robots[0].setFinished(0);
-                robots[0].modbusUpdateCoords();
-                toggle = 1;
-            }
-
+        }else{
+            grippers[i].readSerial(&d, test_id, i);
         }
+
+        robots[i].modbusUpdateCoords();
     }
-
-
-    //robots[0].modbusConnect();
-    //robots[0].finished[0] = 0;
-    robots[0].modbusUpdateCoords();
-
-    //robots[0].modbusDisconnect();
-
-
-
-
-
-
-
 
 }
 
 void Widget::guiUpdate()
 {
 
-    ui->doubleSpinBox_X->setValue(robots[0].TCP_Coords[0]);
-    ui->doubleSpinBox_Y->setValue(robots[0].TCP_Coords[1]);
-    ui->doubleSpinBox_Z->setValue(robots[0].TCP_Coords[2]);
-    ui->doubleSpinBox_XX->setValue(robots[0].TCP_Coords[3]);
-    ui->doubleSpinBox_YY->setValue(robots[0].TCP_Coords[4]);
-    ui->doubleSpinBox_ZZ->setValue(robots[0].TCP_Coords[5]);
+    ui->doubleSpinBox_X->setValue(robots[ui->comboBox->currentIndex()].TCP_Coords[0]);
+    ui->doubleSpinBox_Y->setValue(robots[ui->comboBox->currentIndex()].TCP_Coords[1]);
+    ui->doubleSpinBox_Z->setValue(robots[ui->comboBox->currentIndex()].TCP_Coords[2]);
+    ui->doubleSpinBox_XX->setValue(robots[ui->comboBox->currentIndex()].TCP_Coords[3]);
+    ui->doubleSpinBox_YY->setValue(robots[ui->comboBox->currentIndex()].TCP_Coords[4]);
+    ui->doubleSpinBox_ZZ->setValue(robots[ui->comboBox->currentIndex()].TCP_Coords[5]);
+
+    ui->ip->setText(QString::fromStdString(robots[ui->comboBox->currentIndex()].tcpUR5IP));
+    ui->usb->setText(QString::fromStdString(grippers[ui->comboBox->currentIndex()].portCOM));
 
 
-
-    //testgg.dataIn[0]
-
-    ui->label->setText(QString::fromStdString(to_string(grippers[0].strokeTime)));
-    //ui->label->setText(QString::fromStdString(robots[0].robotName));
-
-    //ui->label->setText(QString::fromStdString(to_string((bool)(robots[0].run[0]))));
 
 
 }
@@ -125,7 +124,7 @@ void Widget::animation()
     int h = size().height();
     int w = size().width();
 
-    int ang = grippers[0].angle;
+    int ang = grippers[ui->comboBox->currentIndex()].angle;
 
     //making the two pen's
     QPen blue;
@@ -291,26 +290,17 @@ void Widget::animation()
 
 void Widget::on_clockwise_clicked()
 {
-    grippers[0].sendmsg('1');
+    grippers[ui->comboBox->currentIndex()].sendmsg('1');
 }
 
 void Widget::on_counter_clicked()
 {
-    grippers[0].sendmsg('2');
+    grippers[ui->comboBox->currentIndex()].sendmsg('2');
 }
 
 void Widget::on_stop_clicked()
 {
-    grippers[0].sendmsg('0');
-}
-
-void Widget::on_junk_clicked()
-{
-    robots[0].setFinished(1);
-}
-
-void Widget::on_pushButton_clicked()
-{
+    grippers[ui->comboBox->currentIndex()].sendmsg('0');
 
 }
 

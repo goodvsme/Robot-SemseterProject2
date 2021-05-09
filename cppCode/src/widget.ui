@@ -31,7 +31,7 @@
      <x>670</x>
      <y>20</y>
      <width>271</width>
-     <height>301</height>
+     <height>328</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -229,6 +229,13 @@
        </widget>
       </item>
      </layout>
+    </item>
+    <item>
+     <widget class="QPushButton" name="calibrate">
+      <property name="text">
+       <string>Calibrate</string>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>

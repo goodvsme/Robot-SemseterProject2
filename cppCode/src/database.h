@@ -15,7 +15,7 @@ public:
     database();
     vector<robotUR5>getRobots();
     vector<string>getGrippers();
-    void sendData(int test,int rAg, double ampP, double ampA, int stroke, double force, double time, bool dir);
+    void sendData(int test,int rAg, double ampP, double ampA, int stroke, double force, double time, int dir);
 
 private:
 

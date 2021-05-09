@@ -69,12 +69,12 @@ bool gripper::readSerial(class database *inwrite, int testid, int rAgID){
 
         if(stop == 0){
 
+            calibrateTest = 0;
             int datafr = read(serial_port, &dataIn, sizeof(dataIn));
             if(datafr == 0){return 0;}
             cout<<"dataIn[0] " << (int)dataIn[0] <<endl;
             if(dataIn[0] == 0){         //Change Direction
                 //send data
-                cout << "d1" << endl;
                 inwrite->sendData(testid, rAgID, peak_amp, avg_amp, dataIn[0], force, strokeTime, direction);
                 //reset variabals
                 amp=0;
@@ -91,7 +91,6 @@ bool gripper::readSerial(class database *inwrite, int testid, int rAgID){
 
                 stop = 1;
 
-                cout << "d2" << endl;
                 inwrite->sendData(testid, rAgID, peak_amp, avg_amp, dataIn[0], force, strokeTime, direction);
                 //reset variabals
                 amp=0;
@@ -117,9 +116,28 @@ bool gripper::readSerial(class database *inwrite, int testid, int rAgID){
                 }
                 angleTime += 0.05*direction;
                 angle = (70/speed)*angleTime;
-                force = (0.3*(58/1)*490)/(55*sin(angle*(M_PI/180))+45*cos(35*(M_PI/180)));
+                force = (0.3*(58/1)*490)/(55*sin((90-angle)*(M_PI/180))+45*cos(35*(M_PI/180)));
                 return 0;
             }
+        }else if(calibrateTest == 1){
+            int datafr = read(serial_port, &dataIn, sizeof(dataIn));
+            if(datafr == 0){return 0;}
+
+            if(dataIn[0]==1){      //Stop
+                //reset variabals
+                amp=0;
+                avg_amp=0;
+                peak_amp=0;
+                force=0;
+                strokeTime=0;
+
+                dataIn[0]=128;
+                angleTime = 0;
+                angle = (70/speed)*angleTime;
+                calibrateTest = 0;
+                return 1;
+            }
+
         }
         return 0;
 }
@@ -130,9 +148,17 @@ void gripper::closeSerial(){
 }
 
 void gripper::sendmsg(unsigned char i){
+    stop = 0;
     unsigned char msg []= {i};
     write(serial_port, msg, sizeof(msg));
-    stop = 0;
+}
+
+void gripper::calibrate()
+{
+    stop = 1;
+    calibrateTest = 1;
+    unsigned char msg []= {'2'};
+    write(serial_port, msg, sizeof(msg));
 }
 
 gripper::~gripper(){

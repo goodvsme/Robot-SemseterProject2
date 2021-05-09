@@ -308,3 +308,8 @@ void Widget::on_spinBox_valueChanged(int arg1)
 {
     test_id = ui->spinBox->value();
 }
+
+void Widget::on_calibrate_clicked()
+{
+    grippers[ui->comboBox->currentIndex()].calibrate();
+}

@@ -25,6 +25,7 @@ public:
     bool readSerial(class database *inwrite, int testid, int rAgID);
     void closeSerial();
     void sendmsg(unsigned char i);
+    void calibrate();
     ~gripper();
 
     string portCOM;
@@ -40,12 +41,12 @@ public:
     float angleTime = 0;
     float angle = 0;
 
-    const float speed = 26;
+    const float speed = 22;
 private:
     int serial_port;
 
     bool stop = 1;
-
+    bool calibrateTest = 0;
 
 };
 

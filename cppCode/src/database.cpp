@@ -4,8 +4,8 @@
 database::database()
 {
     conn = mysql_init(0);
-    //conn = mysql_real_connect(conn, "127.0.0.1", "root", "UbuJhJoefi99", "ur5Database", 3306, NULL, 0);
-    conn = mysql_real_connect(conn, "127.0.0.1", "root", "Emil2000", "ur5Database", 3306, NULL, 0);
+    conn = mysql_real_connect(conn, "127.0.0.1", "root", "UbuJhJoefi99", "ur5Database", 3306, NULL, 0);
+    //conn = mysql_real_connect(conn, "127.0.0.1", "root", "Emil2000", "ur5Database", 3306, NULL, 0);
 }
 
 vector<robotUR5> database::getRobots()
@@ -82,7 +82,7 @@ vector<string> database::getGrippers()
         return gripperports;
     }
 }
-void database::sendData(int test,int rAg, double ampP, double ampA, int stroke, double force, double time, bool dir){
+void database::sendData(int test,int rAg, double ampP, double ampA, int stroke, double force, double time, int dir){
 
     if(conn == 0){
         cout << "Update failed. " << endl;

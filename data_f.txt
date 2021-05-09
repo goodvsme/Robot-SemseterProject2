@@ -21,7 +21,7 @@ create table Gripper_Data(
   stroke_count int not null,
   force_p double not null,
   time_t double not null,
-  direction boolean not null default 0,
+  direction int not null default 0,
   robot_id int not null,
   gripper_id int not null,
   

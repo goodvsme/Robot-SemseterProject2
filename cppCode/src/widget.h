@@ -45,6 +45,9 @@ public:
     vector<gripper> grippers;
 
 private slots:
+    void on_calibrate_clicked();
+
+private slots:
 
     void dataUpdate();
 

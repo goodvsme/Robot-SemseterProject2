@@ -47,8 +47,6 @@ public:
 private slots:
     void on_calibrate_clicked();
 
-private slots:
-
     void dataUpdate();
 
     void on_clockwise_clicked();

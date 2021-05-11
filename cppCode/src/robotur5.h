@@ -35,11 +35,6 @@ public:
 
 private:
 
-
-
-
-
-
     //Modbus
     int rc;
 

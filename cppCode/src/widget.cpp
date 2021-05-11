@@ -9,43 +9,20 @@ Widget::Widget(QWidget *parent)
 {
     ui->setupUi(this);
 
-    setup();
-
+    vector<QString> s=c.setup(ui->spinBox->value());
+    for(unsigned long i = 0; i<s.size();i++){
+        ui->comboBox->addItem(s[i]);
+    }
 }
 
-void Widget::setup(){
 
-    robots = d.getRobots();
-    gripperports = d.getGrippers();
-
-    test_id = ui->spinBox->value();
-
-
-    for(unsigned long i = 0; i<gripperports.size();i++){
-        gripper g;
-        grippers.push_back(g);
-        grippers[i].setAddress(gripperports[i]);
-    }
-    for(unsigned long i = 0; i<robots.size();i++){
-        robots[i].modbusConnect();
-        robots[i].setFinished(0);
-        robots[i].modbusUpdateCoords();
-
-    }
-
-    for(unsigned long i = 0; i<robots.size();i++){
-        ui->comboBox->addItem(QString::fromStdString(robots[i].robotName));
-    }
-
-
-
-}
 
 
 void Widget::paintEvent(QPaintEvent *event)
 {
 
-    dataUpdate();
+    c.dataUpdate();
+
     guiUpdate();
 
     animation();
@@ -59,57 +36,20 @@ Widget::~Widget()
     delete ui;
 }
 
-void Widget::dataUpdate()
-{
 
-    for(unsigned long i = 0; i<robots.size();i++){
-        if(robots[i].connected){
-
-            if(robots[i].runn[0]==1){
-
-                if(toggle){
-                    string s=to_string(robots[i].directions[0]+1);
-                    unsigned char c[1];
-                    strcpy( (char*) c, s.c_str());
-                    grippers[i].sendmsg(c[0]);
-                    toggle = 0;
-                }
-
-                bool r = grippers[i].readSerial(&d, test_id, i);
-
-                if(r){
-                    robots[i].setFinished(1);
-                    robots[i].modbusUpdateCoords();
-                    sleep(1);
-                    robots[i].setFinished(0);
-                    robots[i].modbusUpdateCoords();
-                    toggle = 1;
-                }
-            }else{
-                grippers[i].readSerial(&d, test_id, i);
-            }
-
-        }else{
-            grippers[i].readSerial(&d, test_id, i);
-        }
-
-        robots[i].modbusUpdateCoords();
-    }
-
-}
 
 void Widget::guiUpdate()
 {
 
-    ui->doubleSpinBox_X->setValue(robots[ui->comboBox->currentIndex()].TCP_Coords[0]);
-    ui->doubleSpinBox_Y->setValue(robots[ui->comboBox->currentIndex()].TCP_Coords[1]);
-    ui->doubleSpinBox_Z->setValue(robots[ui->comboBox->currentIndex()].TCP_Coords[2]);
-    ui->doubleSpinBox_XX->setValue(robots[ui->comboBox->currentIndex()].TCP_Coords[3]);
-    ui->doubleSpinBox_YY->setValue(robots[ui->comboBox->currentIndex()].TCP_Coords[4]);
-    ui->doubleSpinBox_ZZ->setValue(robots[ui->comboBox->currentIndex()].TCP_Coords[5]);
+    ui->doubleSpinBox_X->setValue(c.robots[ui->comboBox->currentIndex()].TCP_Coords[0]);
+    ui->doubleSpinBox_Y->setValue(c.robots[ui->comboBox->currentIndex()].TCP_Coords[1]);
+    ui->doubleSpinBox_Z->setValue(c.robots[ui->comboBox->currentIndex()].TCP_Coords[2]);
+    ui->doubleSpinBox_XX->setValue(c.robots[ui->comboBox->currentIndex()].TCP_Coords[3]);
+    ui->doubleSpinBox_YY->setValue(c.robots[ui->comboBox->currentIndex()].TCP_Coords[4]);
+    ui->doubleSpinBox_ZZ->setValue(c.robots[ui->comboBox->currentIndex()].TCP_Coords[5]);
 
-    ui->ip->setText(QString::fromStdString(robots[ui->comboBox->currentIndex()].tcpUR5IP));
-    ui->usb->setText(QString::fromStdString(grippers[ui->comboBox->currentIndex()].portCOM));
+    ui->ip->setText(QString::fromStdString(c.robots[ui->comboBox->currentIndex()].tcpUR5IP));
+    ui->usb->setText(QString::fromStdString(c.grippers[ui->comboBox->currentIndex()].portCOM));
 
 
 
@@ -124,7 +64,7 @@ void Widget::animation()
     int h = size().height();
     int w = size().width();
 
-    int ang = grippers[ui->comboBox->currentIndex()].angle;
+    int ang = c.grippers[ui->comboBox->currentIndex()].angle;
 
     //making the two pen's
     QPen blue;
@@ -290,26 +230,33 @@ void Widget::animation()
 
 void Widget::on_clockwise_clicked()
 {
-    grippers[ui->comboBox->currentIndex()].sendmsg('1');
+    c.grippers[ui->comboBox->currentIndex()].sendmsg('1');
 }
 
 void Widget::on_counter_clicked()
 {
-    grippers[ui->comboBox->currentIndex()].sendmsg('2');
+    c.grippers[ui->comboBox->currentIndex()].sendmsg('2');
 }
 
 void Widget::on_stop_clicked()
 {
-    grippers[ui->comboBox->currentIndex()].sendmsg('0');
+    c.grippers[ui->comboBox->currentIndex()].sendmsg('0');
+    c.robots[ui->comboBox->currentIndex()].setFinished(1);
+    c.robots[ui->comboBox->currentIndex()].modbusUpdateCoords();
+    sleep(1);
+    c.robots[ui->comboBox->currentIndex()].setFinished(0);
+    c.robots[ui->comboBox->currentIndex()].modbusUpdateCoords();
+    c.toggle = 1;
+
 
 }
 
 void Widget::on_spinBox_valueChanged(int arg1)
 {
-    test_id = ui->spinBox->value();
+    c.test_id = ui->spinBox->value();
 }
 
 void Widget::on_calibrate_clicked()
 {
-    grippers[ui->comboBox->currentIndex()].calibrate();
+    c.grippers[ui->comboBox->currentIndex()].calibrate();
 }

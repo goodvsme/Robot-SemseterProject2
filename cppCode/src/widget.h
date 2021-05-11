@@ -2,9 +2,10 @@
 #define WIDGET_H
 
 //Files
-#include "robotur5.h"
-#include "gripper.h"
-#include "database.h"
+//#include "robotur5.h"
+//#include "gripper.h"
+//#include "database.h"
+#include "controller.h"
 
 //UI
 #include <QWidget>
@@ -34,20 +35,10 @@ public:
 
     virtual void paintEvent(QPaintEvent *event);
 
-
-
     ~Widget();
-
-
-    gripper g;
-    vector<robotUR5> robots;
-    vector<string> gripperports;
-    vector<gripper> grippers;
 
 private slots:
     void on_calibrate_clicked();
-
-    void dataUpdate();
 
     void on_clockwise_clicked();
 
@@ -58,18 +49,14 @@ private slots:
     void on_spinBox_valueChanged(int arg1);
 
 private:
-    void setup();
+
 
     void guiUpdate();
     void animation();
 
-    int test_id;
-    bool toggle = 1;
-
     Ui::Widget *ui;
 
-    database d;
-    //hej
+    Controller c;
 
 };
 #endif // WIDGET_H

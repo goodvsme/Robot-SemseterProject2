@@ -43,6 +43,8 @@ if(ANDROID)
     gripper.h
     database.cpp
     database.h
+    controller.cpp
+    controller.h
   )
 else()
   add_executable(SemesterProjekt2
@@ -56,6 +58,8 @@ else()
     gripper.h
     database.cpp
     database.h
+    controller.cpp
+    controller.h
   )
 endif()
 

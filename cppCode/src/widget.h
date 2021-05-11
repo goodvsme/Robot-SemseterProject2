@@ -69,6 +69,7 @@ private:
     Ui::Widget *ui;
 
     database d;
+    //hej
 
 };
 #endif // WIDGET_H

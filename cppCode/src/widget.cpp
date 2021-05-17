@@ -41,15 +41,26 @@ Widget::~Widget()
 void Widget::guiUpdate()
 {
 
-    ui->doubleSpinBox_X->setValue(c.robots[ui->comboBox->currentIndex()].TCP_Coords[0]);
-    ui->doubleSpinBox_Y->setValue(c.robots[ui->comboBox->currentIndex()].TCP_Coords[1]);
-    ui->doubleSpinBox_Z->setValue(c.robots[ui->comboBox->currentIndex()].TCP_Coords[2]);
-    ui->doubleSpinBox_XX->setValue(c.robots[ui->comboBox->currentIndex()].TCP_Coords[3]);
-    ui->doubleSpinBox_YY->setValue(c.robots[ui->comboBox->currentIndex()].TCP_Coords[4]);
-    ui->doubleSpinBox_ZZ->setValue(c.robots[ui->comboBox->currentIndex()].TCP_Coords[5]);
+    //ui->doubleSpinBox_X->setValue(c.robots[ui->comboBox->currentIndex()].TCP_Coords[0]);
+    //ui->doubleSpinBox_Y->setValue(c.robots[ui->comboBox->currentIndex()].TCP_Coords[1]);
+    //ui->doubleSpinBox_Z->setValue(c.robots[ui->comboBox->currentIndex()].TCP_Coords[2]);
+    //ui->doubleSpinBox_XX->setValue(c.robots[ui->comboBox->currentIndex()].TCP_Coords[3]);
+    //ui->doubleSpinBox_YY->setValue(c.robots[ui->comboBox->currentIndex()].TCP_Coords[4]);
+    //ui->doubleSpinBox_ZZ->setValue(c.robots[ui->comboBox->currentIndex()].TCP_Coords[5]);
 
-    ui->ip->setText(QString::fromStdString(c.robots[ui->comboBox->currentIndex()].tcpUR5IP));
-    ui->usb->setText(QString::fromStdString(c.grippers[ui->comboBox->currentIndex()].portCOM));
+    ui->doubleSpinBox_X->setValue(c.getCords(ui->comboBox->currentIndex())[0]);
+    ui->doubleSpinBox_Y->setValue(c.getCords(ui->comboBox->currentIndex())[1]);
+    ui->doubleSpinBox_Z->setValue(c.getCords(ui->comboBox->currentIndex())[2]);
+    ui->doubleSpinBox_XX->setValue(c.getCords(ui->comboBox->currentIndex())[3]);
+    ui->doubleSpinBox_YY->setValue(c.getCords(ui->comboBox->currentIndex())[4]);
+    ui->doubleSpinBox_ZZ->setValue(c.getCords(ui->comboBox->currentIndex())[5]);
+
+
+    //ui->ip->setText(QString::fromStdString(c.robots[ui->comboBox->currentIndex()].tcpUR5IP));
+    //ui->usb->setText(QString::fromStdString(c.grippers[ui->comboBox->currentIndex()].portCOM));
+    ui->ip->setText(c.getIp(ui->comboBox->currentIndex()));
+    ui->usb->setText(c.getComport(ui->comboBox->currentIndex()));
+    ui->ampBox->setValue(c.getAmp(ui->comboBox->currentIndex())*1000);
 
 
 
@@ -64,7 +75,8 @@ void Widget::animation()
     int h = size().height();
     int w = size().width();
 
-    int ang = c.grippers[ui->comboBox->currentIndex()].angle;
+    //int ang = c.grippers[ui->comboBox->currentIndex()].angle;
+    int ang = c.getAngle(ui->comboBox->currentIndex());
 
     //making the two pen's
     QPen blue;
@@ -230,33 +242,38 @@ void Widget::animation()
 
 void Widget::on_clockwise_clicked()
 {
-    c.grippers[ui->comboBox->currentIndex()].sendmsg('1');
+    //c.grippers[ui->comboBox->currentIndex()].sendmsg('1');
+    c.drive(ui->comboBox->currentIndex(),'1');
 }
 
 void Widget::on_counter_clicked()
 {
-    c.grippers[ui->comboBox->currentIndex()].sendmsg('2');
+    //c.grippers[ui->comboBox->currentIndex()].sendmsg('2');
+    c.drive(ui->comboBox->currentIndex(),'2');
 }
 
 void Widget::on_stop_clicked()
 {
-    c.grippers[ui->comboBox->currentIndex()].sendmsg('0');
-    c.robots[ui->comboBox->currentIndex()].setFinished(1);
-    c.robots[ui->comboBox->currentIndex()].modbusUpdateCoords();
-    sleep(1);
-    c.robots[ui->comboBox->currentIndex()].setFinished(0);
-    c.robots[ui->comboBox->currentIndex()].modbusUpdateCoords();
-    c.toggle = 1;
+    //c.grippers[ui->comboBox->currentIndex()].sendmsg('0');
+    //c.robots[ui->comboBox->currentIndex()].setFinished(1);
+    //c.robots[ui->comboBox->currentIndex()].modbusUpdateCoords();
+    //sleep(1);
+    //c.robots[ui->comboBox->currentIndex()].setFinished(0);
+    //c.robots[ui->comboBox->currentIndex()].modbusUpdateCoords();
+    //c.toggle = 1;
 
+    c.drive(ui->comboBox->currentIndex(),'0');
 
 }
 
 void Widget::on_spinBox_valueChanged(int arg1)
 {
-    c.test_id = ui->spinBox->value();
+    //c.test_id = ui->spinBox->value();
+    c.setTestID(ui->spinBox->value());
 }
 
 void Widget::on_calibrate_clicked()
 {
-    c.grippers[ui->comboBox->currentIndex()].calibrate();
+    //c.grippers[ui->comboBox->currentIndex()].calibrate();
+    c.calibrategripper(ui->comboBox->currentIndex());
 }

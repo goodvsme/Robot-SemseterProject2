@@ -20,7 +20,19 @@ public:
     vector<QString> setup(int test_id);
     void dataUpdate();
 
+    float getAngle(int index);
+    void drive(int index, char dir);
+    void calibrategripper(int index);
+    void setTestID(int id);
+    QString getIp(int index);
+    QString getComport(int index);
+    float getAmp(int index);
+    array <float,6> getCords(int index);
 
+
+
+
+private:
     gripper g;
     vector<robotUR5> robots;
     vector<string> gripperports;
@@ -28,7 +40,6 @@ public:
 
     int test_id;
     bool toggle = 1;
-private:
 
     database d;
 };

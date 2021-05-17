@@ -75,3 +75,53 @@ void Controller::dataUpdate()
     }
 
 }
+
+float Controller::getAngle(int index)
+{
+    return grippers[index].angle;
+}
+
+void Controller::drive(int index, char dir)
+{
+    if(dir=='0'){
+        grippers[index].sendmsg('0');
+        robots[index].setFinished(1);
+        robots[index].modbusUpdateCoords();
+        sleep(1);
+        robots[index].setFinished(0);
+        robots[index].modbusUpdateCoords();
+        toggle = 1;
+    }else{
+        grippers[index].sendmsg(dir);
+    }
+}
+
+void Controller::calibrategripper(int index)
+{
+    grippers[index].calibrate();
+}
+
+void Controller::setTestID(int id)
+{
+    test_id = id;
+}
+
+QString Controller::getIp(int index)
+{
+    return QString::fromStdString(robots[index].tcpUR5IP);
+}
+
+QString Controller::getComport(int index)
+{
+    return QString::fromStdString(grippers[index].portCOM);
+}
+
+float Controller::getAmp(int index)
+{
+    return grippers[index].avg_amp;
+}
+
+array<float,6> Controller::getCords(int index)
+{
+    return robots[index].TCP_Coords;
+}
